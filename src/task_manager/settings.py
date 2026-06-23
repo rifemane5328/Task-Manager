@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'task_manage',
+    'teams',
     "crispy_forms",
     "crispy_bootstrap5",
 ]
@@ -148,5 +149,5 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "task_manage:profile"
+LOGIN_REDIRECT_URL = "task_manage:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"

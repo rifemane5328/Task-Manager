@@ -17,7 +17,7 @@ def register_view(request):
             user.is_active = True
             user.save()
             login(request, user)
-            response = redirect("task_manage:profile")
+            return redirect("task_manage:dashboard")
     return render(request, "accounts/register.html", {"form": form})
 
 
@@ -56,7 +56,7 @@ class GoogleCallbackView(View):
 
         login(request, user)
 
-        response = redirect("task_manage:profile")
+        response = redirect("task_manage:dashboard")
         if created:
             messages.success(request, "Ласкаво просимо! Ви успішно зареєструвалися.")
         else:

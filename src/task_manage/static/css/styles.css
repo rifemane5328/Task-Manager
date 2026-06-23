@@ -1,0 +1,20 @@
+.main-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card.total-tasks {
+    border-color:rgb(150, 0, 209);
+    border-width: 3px;
+}
+
+.card.done-today {
+    border-color:rgb(0, 133, 9);
+    border-width: 3px;
+}
+
+.card.missed {
+    border-color: rgb(189, 2, 2);
+    border-width: 3px;
+}
