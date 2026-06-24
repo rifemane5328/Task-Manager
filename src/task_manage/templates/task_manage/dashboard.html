@@ -46,7 +46,7 @@ Dashboard
 <div class="row g-2 mb-3 mt-3">
     <div class="col-6">
         <h2>Мої задачі</h2>
-        <div class="card bg-transparent border border-dark">
+        <div class="card bg-transparent border">
             <div class="card-body">
                 <table class="table table-borderless align-middle mb-0">
                     <thead>
@@ -61,7 +61,12 @@ Dashboard
                     {% for task in user_tasks %}
                         <tr>
                             <td>{{ task.title }}</td>
-                            <td><span class="badge bg-dark">{{ task.get_status_display }}</span></td>
+                            <td><span class="badge
+                                {% if task.status == 'to_do' %}bg-secondary
+                                {% elif task.status == 'in_progress' %}bg-primary
+                                {% elif task.status == 'done' %}bg-success
+                                {% endif %}
+                                ">{{ task.get_status_display }}</span></td>
                             <td>{{ task.deadline|date:"d.m" }}</td>
                             <td>{{ task.category.name }}</td>
                         </tr>
@@ -73,7 +78,7 @@ Dashboard
     </div>
     <div class="col-6">
         <h2>Мої команди</h2>
-        <div class="card bg-transparent border border-dark">
+        <div class="card bg-transparent border">
             <div class="card-body">
                 <table class="table table-borderless align-middle mb-0">
                     <thead>

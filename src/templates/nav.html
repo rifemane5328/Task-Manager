@@ -11,6 +11,10 @@
                 <a class="nav-link" href="#">Завдання</a> -->
                 <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:profile' %}">Профіль</a>
             </div>
+            <label class="switch" id="themeToggle">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
             {% if request.user.is_authenticated %}
             <form class="ms-auto" method="post" action="{% url 'accounts:logout' %}">
                 {% csrf_token %}
