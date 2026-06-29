@@ -40,6 +40,9 @@
                     {{ form|crispy }}
                     <button type="submit" class="btn btn-primary w-100 mt-3">Увійти</button>
                 </form>
+                <p class="text-center mt-2">
+                    <a href="{% url 'password_reset' %}">Забули пароль?</a>
+                </p>
                 <p class="text-center my-2" style="color: rgb(83, 83, 83)">або</p>
                 <a class="auth-button my-2" href="{% url 'accounts:google_login' %}">
                     <div class="auth-button-state"></div>

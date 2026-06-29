@@ -151,3 +151,19 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "task_manage:dashboard"
 LOGOUT_REDIRECT_URL = "accounts:login"
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+
+CELERY_TIMEZONE = "Europe/Kyiv"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("EMAIL_HOST_USER")
