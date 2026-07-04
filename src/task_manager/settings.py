@@ -43,8 +43,9 @@ INSTALLED_APPS = [
     'accounts',
     'task_manage',
     'teams',
-    "crispy_forms",
-    "crispy_bootstrap5",
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

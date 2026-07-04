@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мої завдання{% endblock %}
+
+{% block styles %}
+<link href="{% static 'css/styles.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block nav %}
+{% include 'nav.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-3 flex-grow-1 px-4">
+    <div class="main-block py-1">
+        <h1>Мої завдання</h1>
+    </div>
+    <div class="row">
+        <!-- Search and filters -->
+        <div class="col-md-3 my-4">
+            <div class="bg-body-secondary rounded p-3 ms-3">
+                <h5 class="mb-3">Пошук і фільтри</h5>
+                <form role="search">
+                    <input class="form-control mb-2" name="title" value="{{ request.GET.title }}" type="search" placeholder="Шукати по назві..">
+                    <p class="mb-2">Дедлайн від</p>
+                    <input class="form-control mb-2" name="deadline_after" value="{{ request.GET.deadline_after }}" type="date">
+                    <p class="mb-2">Дедлайн до</p>
+                    <input class="form-control mb-2" name="deadline_before" value="{{ request.GET.deadline_before }}" type="date">
+                    
+                    <select class="form-select mb-2" name="priority">
+                        <option value="">Усі пріоритети</option>
+                        <option value="high" {% if request.GET.priority == "high" %}selected{% endif %}>Високий</option>
+                        <option value="medium" {% if request.GET.priority == "medium" %}selected{% endif %}>Середній</option>
+                        <option value="low" {% if request.GET.priority == "low" %}selected{% endif %}>Низький</option>
+                    </select>
+
+                    <select class="form-select mb-2" name="status">
+                        <option value="">Усі статуси</option>
+                        <option value="to_do" {% if request.GET.status == "to_do" %}selected{% endif %}>Необхідно виконати</option>
+                        <option value="in_progress" {% if request.GET.status == "in_progress" %}selected{% endif %}>Виконується</option>
+                        <option value="done" {% if request.GET.status == "done" %}selected{% endif %}>Готове</option>
+                    </select>
+                    
+                    <p class="mb-2">Категорія</p>
+                    {{ filter.form.category }}
+                    <button class="btn btn-primary w-100" type="submit">Застосувати <i class="bi bi-arrow-right"></i></button>
+                </form>
+            </div>
+        </div>
+        <!-- Tasks -->
+        <div class="col-md-9 my-4">
+        {% if page_obj %}
+            {% for task in page_obj %}
+                <div class="card task-card mb-2 border-start border-3 border-secondary">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ task.title }} <span class="badge fs-6
+                                            {% if task.status == 'to_do' %}bg-secondary
+                                            {% elif task.status == 'in_progress' %}bg-primary
+                                            {% elif task.status == 'done' %}bg-success
+                                            {% endif %}
+                                            ">{{ task.get_status_display }}</span>
+                        </h4>
+                        <div class="row mt-2">
+                            <div class="col md-6">
+                                {% if task.description %}
+                                <p class="card-text my-1">
+                                    <span class="text-muted small">Опис: </span>{{ task.description }}
+                                </p>
+                                {% endif %}
+                                <p class="card-text my-1">
+                                    <span class="text-muted small">Виконати до: </span>{% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}
+                                </p>
+                                <p class="card-text my-1
+                                    {% if task.priority == 'high' %} text-danger
+                                    {% elif task.priority == 'medium' %} text-medium
+                                    {% elif task.priority == 'low' %} text-success
+                                    {% endif %}"">
+                                    <span class="small text-muted">Пріоритет: </span>{{ task.get_priority_display }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="card-text my-1">
+                                    <span class="text-muted small">Категорія: </span>{{ task.category.name }}
+                                </p>
+                                <p class="card-text my-1">
+                                    <span class="text-muted small">Команда: </span>{{ task.team.name }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div>
+                <p class="text-muted">Завдань не знайдено.</p>
+                <p class="text-muted">Спробуйте очистити фільтри та шукати знову.</p>
+            </div>
+        {% endif %}
+        </div>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination justify-content-center mt-5">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo;Перша</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Попередня</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link">&laquo;Перша</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link">Попередня</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <a class="page-link">{{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</a>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Наступна</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Остання&raquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link">Наступна</a>
+                </li>
+                <li class="page-item disabled">
+                    <a class="page-link">Остання&raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

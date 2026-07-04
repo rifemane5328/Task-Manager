@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Subquery, OuterRef
+from django.core.paginator import Paginator
 from datetime import date
 
 from .models import Task
 from teams.models import Team, TeamMember
+from .filters import TaskFilter
+
 
 @login_required
 def profile_view(request):
@@ -31,3 +34,20 @@ def dashboard_view(request):
         "user_teams": teams
     }
     return render(request, "task_manage/dashboard.html", context)
+
+@login_required
+def my_tasks_view(request):
+    tasks = Task.objects.filter(assigned_to=request.user)
+    task_filter = TaskFilter(request.GET, queryset=tasks, request=request)
+
+    paginator = Paginator(task_filter.qs, 5)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "filter": task_filter,
+        "tasks": task_filter.qs,
+        "page_obj": page_obj
+    }
+
+    return render(request, "task_manage/my_tasks.html", context)

@@ -18,3 +18,11 @@
     border-color: rgb(189, 2, 2);
     border-width: 3px;
 }
+
+.task-card {
+    transition: box-shadow 0.5s ease;
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}

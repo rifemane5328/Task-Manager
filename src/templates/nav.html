@@ -6,9 +6,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link {% if request.resolver_match.url_name == 'calendar' %}active{% endif %}" href="#">Календар</a>
-                <!-- <a class="nav-link" href="#">Команди</a>
-                <a class="nav-link" href="#">Завдання</a> -->
+                <a class="nav-link {% if request.resolver_match.url_name == 'my_tasks' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:my_tasks' %}">Мої завдання</a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'calendar' %}active{% endif %}" href="#">Календар <i class="bi bi-calendar"></i></a>
+                <!-- <a class="nav-link" href="#">Команди</a> -->
                 <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:profile' %}">Профіль</a>
             </div>
             <label class="switch" id="themeToggle">

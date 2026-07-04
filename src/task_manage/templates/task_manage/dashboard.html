@@ -14,94 +14,96 @@ Dashboard
 {% endblock %}
 
 {% block content %}
-<div class="main-block">
-    <h1>Ласкаво просимо, {{ request.user.full_name }}!</h1>
-</div>
-<div class="row g-2 mb-3 mt-4">
-    <div class="col-4">
-        <div class="card bg-transparent h-100 total-tasks">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Всього задач</h6>
-                <p class="fs-1 fw-bold">{{ total_tasks }}</p>
+<div class="container my-3 flex-grow-1">
+    <div class="main-block">
+        <h1>Ласкаво просимо, {{ request.user.full_name }}!</h1>
+    </div>
+    <div class="row g-2 mb-3 mt-4">
+        <div class="col-4">
+            <div class="card bg-transparent h-100 total-tasks">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Всього завдань</h6>
+                    <p class="fs-1 fw-bold">{{ total_tasks }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card bg-transparent h-100 done-today">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Виконується</h6>
+                    <p class="fs-1 fw-bold">{{ in_progress }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card bg-transparent h-100 missed">
+                <div class="card-body">
+                    <h6 card-title text-muted>Пропущено</h6>
+                    <p class="fs-1 fw-bold">{{ missed_tasks }}</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-4">
-        <div class="card bg-transparent h-100 done-today">
-            <div class="card-body">
-                <h6 class="card-title text-muted">Виконується</h6>
-                <p class="fs-1 fw-bold">{{ in_progress }}</p>
+    <div class="row g-2 mb-3 mt-3">
+        <div class="col-6">
+            <h2>Топ завдань</h2>
+            <div class="card bg-transparent border">
+                <div class="card-body">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Назва</th>
+                                <th>Статус</th>
+                                <th>Виконати до</th>
+                                <th>Категорія</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for task in user_tasks %}
+                            <tr>
+                                <td>{{ task.title }}</td>
+                                <td><span class="badge
+                                    {% if task.status == 'to_do' %}bg-secondary
+                                    {% elif task.status == 'in_progress' %}bg-primary
+                                    {% elif task.status == 'done' %}bg-success
+                                    {% endif %}
+                                    ">{{ task.get_status_display }}</span></td>
+                                <td>{{ task.deadline|date:"d.m" }}</td>
+                                <td>{{ task.category.name }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-4">
-        <div class="card bg-transparent h-100 missed">
-            <div class="card-body">
-                <h6 card-title text-muted>Пропущено</h6>
-                <p class="fs-1 fw-bold">{{ missed_tasks }}</p>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row g-2 mb-3 mt-3">
-    <div class="col-6">
-        <h2>Мої задачі</h2>
-        <div class="card bg-transparent border">
-            <div class="card-body">
-                <table class="table table-borderless align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Назва</th>
-                            <th>Статус</th>
-                            <th>Виконати до</th>
-                            <th>Категорія</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for task in user_tasks %}
-                        <tr>
-                            <td>{{ task.title }}</td>
-                            <td><span class="badge
-                                {% if task.status == 'to_do' %}bg-secondary
-                                {% elif task.status == 'in_progress' %}bg-primary
-                                {% elif task.status == 'done' %}bg-success
-                                {% endif %}
-                                ">{{ task.get_status_display }}</span></td>
-                            <td>{{ task.deadline|date:"d.m" }}</td>
-                            <td>{{ task.category.name }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <h2>Мої команди</h2>
-        <div class="card bg-transparent border">
-            <div class="card-body">
-                <table class="table table-borderless align-middle mb-0">
-                    <thead>
-                        <tr>
-                            <th>Назва</th>
-                            <th>Роль</th>
-                            <th>Учасників</th>
-                            <th>Всього завдань</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for team in user_teams %}
-                        <tr>
-                            <td>{{ team.name }}</td>
-                            <td>{% if team.user_role == "owner" %}Власник
-                                {% elif team.user_role == "admin" %}Адміністатор
-                                {% elif team.user_role == "member" %}Учасник{% endif %}</td>
-                            <td>{{ team.member_count }}</td>
-                            <td>{{ team.task_count }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+        <div class="col-6">
+            <h2>Мої команди</h2>
+            <div class="card bg-transparent border">
+                <div class="card-body">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Назва</th>
+                                <th>Роль</th>
+                                <th>Учасників</th>
+                                <th>Всього завдань</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for team in user_teams %}
+                            <tr>
+                                <td>{{ team.name }}</td>
+                                <td>{% if team.user_role == "owner" %}Власник
+                                    {% elif team.user_role == "admin" %}Адміністатор
+                                    {% elif team.user_role == "member" %}Учасник{% endif %}</td>
+                                <td>{{ team.member_count }}</td>
+                                <td>{{ team.task_count }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
