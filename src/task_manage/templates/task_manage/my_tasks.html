@@ -17,6 +17,7 @@
         <h1>Мої завдання</h1>
     </div>
     <div class="row">
+
         <!-- Search and filters -->
         <div class="col-md-3 my-4">
             <div class="bg-body-secondary rounded p-3 ms-3">
@@ -48,6 +49,7 @@
                 </form>
             </div>
         </div>
+
         <!-- Tasks -->
         <div class="col-md-9 my-4">
         {% if page_obj %}
@@ -69,11 +71,12 @@
                                 </p>
                                 {% endif %}
                                 <p class="card-text my-1">
-                                    <span class="text-muted small">Виконати до: </span>{% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}
+                                    <span class="text-muted small">Виконати до: </span>
+                                    {% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}
                                 </p>
                                 <p class="card-text my-1
                                     {% if task.priority == 'high' %} text-danger
-                                    {% elif task.priority == 'medium' %} text-medium
+                                    {% elif task.priority == 'medium' %} text-warning
                                     {% elif task.priority == 'low' %} text-success
                                     {% endif %}"">
                                     <span class="small text-muted">Пріоритет: </span>{{ task.get_priority_display }}
@@ -88,6 +91,17 @@
                                 </p>
                             </div>
                         </div>
+                        <div class="d-flex justify-content-end">
+                            <!--  В data-task передаємо JSON для передзаповнення полів -->
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editingModal"
+                            data-task='{ "id": "{{ task.id }}", "title": "{{ task.title|escapejs }}",
+                            "description": "{{ task.description|escapejs }}", "deadline": "{{ task.deadline|date:"Y-m-d" }}",
+                            "priority": "{{ task.priority }}", "status": "{{ task.status }}",
+                            "category_id": "{{ task.category.id }}", "assigned_to_id": "{{ task.assigned_to.id }}",
+                            "team_id": "{{ task.team.id }}", "user_role": "{{ task.user_role }}"}'>
+                                Редагувати завдання
+                            </button>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -99,6 +113,7 @@
         {% endif %}
         </div>
     </div>
+
     <!-- Pagination -->
     <div class="pagination justify-content-center mt-5">
         <ul class="pagination">
@@ -139,5 +154,120 @@
             {% endif %}
         </ul>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Редагування завдання</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-2 admin-field">
+                            <label class="col-form-label">Назва:</label>
+                            <input type="text" class="form-control" id="formTitle" name="title"></input>
+                        </div>
+                        <div class="mb-2">
+                            <label class="col-form-label">Опис:</label>
+                            <textarea class="form-control" id="formDesc" name="description"></textarea>
+                        </div>
+                        <div class="mb-2 admin-field">
+                            <label class="col-form-label">Дедлайн:</label>
+                            <input type="date" class="form-control" id="formDeadline" name="deadline"></input>
+                        </div>
+                        <div class="mb-2 admin-field">
+                            <label class="col-form-label">Пріоритет:</label>
+                            <select class="form-select" id="formPriority" name="priority">
+                                <option value="high">Високий</option>
+                                <option value="medium">Середній</option>
+                                <option value="low">Низький</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="col-form-label">Статус:</label>
+                            <select class="form-select" id="formStatus" name="status">
+                                <option value="to_do">Необхідно виконати</option>
+                                <option value="in_progress">Виконується</option>
+                                <option value="done">Готове</option>
+                            </select>
+                        </div>
+                        <div class="mb-2 admin-field">
+                            <label class="col-form-label">Категорія:</label>
+                            <select class="form-select" id="formCategory" name="category">
+                                <option value="">Немає</option>
+                                {% for c in categories %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-2 admin-field">
+                            <label class="col-form-label">Призначено:</label>
+                            <select class="form-select" id="formAssignedTo" name="assigned_to">
+                                <option value="">Немає</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mt-2" type="submit">Зберегти зміни</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("show.bs.modal", function (event) {
+        // Беремо з кнопки дані про поточне завдання для передзаповнення полів
+        const btn = event.relatedTarget;
+
+        const task = JSON.parse(btn.dataset.task);
+        const taskId = task.id;
+        const role = task.user_role;
+        const adminFields = document.querySelectorAll(".admin-field");
+
+        // Ховаємо адміністратороські поля якщо користувач учасник
+        if (role === 'member') {
+            adminFields.forEach(field => field.classList.add('d-none'));
+        } else {
+            adminFields.forEach(field => field.classList.remove('d-none'));
+        };
+
+        const form = document.querySelector("#taskForm");
+        const formTitle = document.querySelector("#formTitle");
+        const formDesc = document.querySelector("#formDesc");
+        const formDeadline = document.querySelector("#formDeadline");
+        const formPriority = document.querySelector("#formPriority");
+        const formStatus = document.querySelector("#formStatus");
+        const formCategory = document.querySelector("#formCategory");
+        const formAssignedTo = document.querySelector("#formAssignedTo");
+
+        const baseUrl = "{% url 'task_manage:edit_task' 0 %}";
+        form.action = baseUrl.replace('0', taskId);
+        formTitle.value = task.title;
+        formDesc.value = task.description;
+        formDeadline.value = task.deadline;
+        formPriority.value = task.priority;
+        formStatus.value = task.status;
+        formCategory.value = String(task.category_id);
+
+        const teamMembersDict = {{ team_members_json|safe }};
+        const CurrentTeamMembers = teamMembersDict[task.team_id] || [];
+
+        // Очищаємо тег select перед заповненням
+        formAssignedTo.innerHTML = '<option value="">Немає</option>';
+
+        // Створюємо тег option для кожного учасника команди
+        CurrentTeamMembers.forEach(member => {
+            const option = document.createElement('option');
+            option.value = member.id;
+            option.textContent = member.name;
+            formAssignedTo.appendChild(option);
+        });
+        formAssignedTo.value = String(task.assigned_to_id);
+    });
+</script>
 {% endblock %}
