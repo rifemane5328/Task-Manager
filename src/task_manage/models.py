@@ -7,6 +7,10 @@ class Category(models.Model):
     name = models.CharField(max_length=64)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="categories")
 
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories' # замість 'Categorys'
+
     def __str__(self):
         return self.name
 
