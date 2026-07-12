@@ -19,7 +19,7 @@ def profile_view(request):
 
 @login_required
 def dashboard_view(request):
-    base_tasks = Task.objects.filter(assigned_to=request.user, deadline__gte=date.today())
+    base_tasks = Task.objects.filter(assigned_to=request.user)
 
     total_tasks = base_tasks.count()
     user_tasks = base_tasks.order_by("deadline")[:5]

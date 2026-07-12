@@ -68,7 +68,7 @@ Dashboard
                                     {% elif task.status == 'done' %}bg-success
                                     {% endif %}
                                     ">{{ task.get_status_display }}</span></td>
-                                <td>{{ task.deadline|date:"d.m" }}</td>
+                                <td>{% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}</td>
                                 <td>{{ task.category.name }}</td>
                             </tr>
                         {% endfor %}

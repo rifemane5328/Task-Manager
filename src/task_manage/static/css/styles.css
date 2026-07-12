@@ -1,9 +1,3 @@
-.main-block {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
 .card.total-tasks {
     border-color:rgb(150, 0, 209);
     border-width: 3px;

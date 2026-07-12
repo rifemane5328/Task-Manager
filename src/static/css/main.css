@@ -1,0 +1,13 @@
+.main-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navbar-brand {
+    color: var(--bs-primary);
+    transition: color 0.15s ease-in-out;
+}
+.navbar-brand:hover {
+    color: var(--bs-primary-text-emphasis);
+}

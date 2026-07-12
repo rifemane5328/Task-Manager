@@ -1,15 +1,15 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'task_manage:dashboard' %}" style="color: blue">Task Manager</a>
+        <a class="navbar-brand" href="{% url 'task_manage:dashboard' %}">Task Manager</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link {% if request.resolver_match.url_name == 'my_tasks' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:my_tasks' %}">Мої завдання</a>
-                <a class="nav-link {% if request.resolver_match.url_name == 'calendar' %}active{% endif %}" href="#">Календар <i class="bi bi-calendar"></i></a>
-                <!-- <a class="nav-link" href="#">Команди</a> -->
-                <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:profile' %}">Профіль</a>
+                <a class="nav-link me-3 {% if request.resolver_match.url_name == 'my_tasks' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:my_tasks' %}"><i class="bi bi-list-task"></i> Мої завдання</a>
+                <a class="nav-link me-3 {% if request.resolver_match.url_name == 'teams' %}active{% endif %}" href="{% url 'teams:my_teams' %}"><i class="bi bi-people-fill"></i> Мої команди</a>
+                <a class="nav-link me-3 {% if request.resolver_match.url_name == 'calendar' %}active{% endif %}" href="#"><i class="bi bi-calendar"></i> Календар</a>
+                <a class="nav-link me-3 {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" aria-current="page" href="{% url 'task_manage:profile' %}"><i class="bi bi-person-fill"></i> Профіль</a>
             </div>
             <label class="switch" id="themeToggle">
                 <input type="checkbox">
