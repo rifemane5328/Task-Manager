@@ -11,3 +11,7 @@
 .navbar-brand:hover {
     color: var(--bs-primary-text-emphasis);
 }
+
+.nav-tabs .nav-link {
+    color: var(--bs-body-color);
+}

@@ -1,0 +1,22 @@
+<h1 class="ms-2">
+    {{ team.name }} <span class="badge fs-5
+    {% if user_role == 'owner' %} bg-primary
+    {% elif user_role == 'admin' %} bg-warning
+    {% else %} bg-info {% endif %}">
+        {% if user_role == "owner" %}Власник
+        {% elif user_role == "admin" %}Адміністатор
+        {% elif user_role == "member" %}Учасник{% endif %}</span>
+</h1>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'team_detail' %}active{% endif %}" href="{% url 'teams:team_detail' team.id %}">Завдання</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'team_members' %}active{% endif %}" href="{% url 'teams:team_members' team.id %}">Учасники</a>
+    </li>
+    {% if user_role == 'owner' %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'team_settings' %}active{% endif %}" href="{% url 'teams:team_settings' team.id %}">Налаштування</a>
+        </li>
+    {% endif %}
+</ul>

@@ -1,24 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Мої завдання{% endblock %}
+{% block title %}{{ team.name }}: Завдання{% endblock %}
 
 {% block styles %}
 <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+<link href="{% static 'css/main.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block nav %}
 {% include 'nav.html' %}
+{% include 'teams/team_nav.html' %}
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid my-3 flex-grow-1 px-4">
     <div class="main-block py-1">
-        <h1>Мої завдання</h1>
+        <h1>Завдання команди «{{ team.name }}»</h1>
     </div>
+
     <div class="row">
 
-        <!-- Search and filters -->
+        <!-- Search -->
         <div class="col-md-3 my-4">
             <div class="bg-body-secondary rounded p-3 ms-3">
                 <h5 class="mb-3">Пошук і фільтри</h5>
@@ -28,7 +31,7 @@
                     <input class="form-control mb-2" name="deadline_after" value="{{ request.GET.deadline_after }}" type="date">
                     <p class="mb-2">Дедлайн до</p>
                     <input class="form-control mb-2" name="deadline_before" value="{{ request.GET.deadline_before }}" type="date">
-                    
+
                     <select class="form-select mb-2" name="priority">
                         <option value="">Усі пріоритети</option>
                         <option value="high" {% if request.GET.priority == "high" %}selected{% endif %}>Високий</option>
@@ -42,9 +45,11 @@
                         <option value="in_progress" {% if request.GET.status == "in_progress" %}selected{% endif %}>Виконується</option>
                         <option value="done" {% if request.GET.status == "done" %}selected{% endif %}>Готове</option>
                     </select>
-                    
+
                     <p class="mb-2">Категорія</p>
                     {{ filter.form.category }}
+                    <p class="mb-2">Призначено</p>
+                    {{ filter.form.assigned_to }}
                     <button class="btn btn-primary w-100" type="submit">Застосувати <i class="bi bi-arrow-right"></i></button>
                 </form>
             </div>
@@ -52,65 +57,68 @@
 
         <!-- Tasks -->
         <div class="col-md-9 my-4">
-        {% if page_obj %}
-            {% for task in page_obj %}
-                <div class="card task-card mb-2 border-start border-3 border-secondary">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ task.title }} <span class="badge fs-6
-                                            {% if task.status == 'to_do' %}bg-secondary
-                                            {% elif task.status == 'in_progress' %}bg-primary
-                                            {% elif task.status == 'done' %}bg-success
-                                            {% endif %}
-                                            ">{{ task.get_status_display }}</span>
-                        </h4>
-                        <div class="row mt-2">
-                            <div class="col md-6">
-                                {% if task.description %}
-                                <p class="card-text my-1">
-                                    <span class="text-muted small">Опис: </span>{{ task.description }}
-                                </p>
-                                {% endif %}
-                                <p class="card-text my-1">
-                                    <span class="text-muted small">Виконати до: </span>
-                                    {% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}
-                                </p>
-                                <p class="card-text my-1
-                                    {% if task.priority == 'high' %} text-danger
-                                    {% elif task.priority == 'medium' %} text-warning
-                                    {% elif task.priority == 'low' %} text-success
-                                    {% endif %}"">
-                                    <span class="small text-muted">Пріоритет: </span>{{ task.get_priority_display }}
-                                </p>
+            {% if page_obj %}
+                {% for task in page_obj %}
+                    <div class="card task-card mb-2 border-start border-3 border-secondary">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ task.title }} <span class="badge fs-6
+                                                {% if task.status == 'to_do' %}bg-secondary
+                                                {% elif task.status == 'in_progress' %}bg-primary
+                                                {% elif task.status == 'done' %}bg-success
+                                                {% endif %}
+                                                ">{{ task.get_status_display }}</span>
+                            </h4>
+                            <div class="row mt-2">
+                                <div class="col md-6">
+                                    {% if task.description %}
+                                    <p class="card-text my-1">
+                                        <span class="text-muted small">Опис: </span>{{ task.description }}
+                                    </p>
+                                    {% endif %}
+                                    <p class="card-text my-1">
+                                        <span class="text-muted small">Виконати до: </span>
+                                        {% if task.deadline %} {{ task.deadline|date:"d.m" }} {% else %} Немає {% endif %}
+                                    </p>
+                                    <p class="card-text my-1
+                                        {% if task.priority == 'high' %} text-danger
+                                        {% elif task.priority == 'medium' %} text-warning
+                                        {% elif task.priority == 'low' %} text-success
+                                        {% endif %}"">
+                                        <span class="small text-muted">Пріоритет: </span>{{ task.get_priority_display }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="card-text my-1">
+                                        <span class="text-muted small">Категорія: </span>{{ task.category.name }}
+                                    </p>
+                                    <p class="card-text my-1">
+                                        <span class="text-muted small">Призначено: </span>
+                                        {% if task.assigned_to %} {{ task.assigned_to }} {% else %}Немає {% endif %}
+                                    </p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <p class="card-text my-1">
-                                    <span class="text-muted small">Категорія: </span>{{ task.category.name }}
-                                </p>
-                                <p class="card-text my-1">
-                                    <span class="text-muted small">Команда: </span>{{ task.team.name }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <!--  В data-task передаємо JSON для передзаповнення полів -->
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editingModal"
-                            data-task='{ "id": "{{ task.id }}", "title": "{{ task.title|escapejs }}",
-                            "description": "{{ task.description|escapejs }}", "deadline": "{{ task.deadline|date:"Y-m-d" }}",
-                            "priority": "{{ task.priority }}", "status": "{{ task.status }}",
-                            "category_id": "{{ task.category.id }}", "assigned_to_id": "{{ task.assigned_to.id }}",
-                            "team_id": "{{ task.team.id }}", "user_role": "{{ task.user_role }}"}'>
-                                Редагувати завдання
-                            </button>
+                            {% if user_role in 'owner, admin' or task.assigned_to == request.user %}
+                                <div class="d-flex justify-content-end">
+                                    <!--  В data-task передаємо JSON для передзаповнення полів -->
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editingModal"
+                                    data-task='{ "id": "{{ task.id }}", "title": "{{ task.title|escapejs }}",
+                                    "description": "{{ task.description|escapejs }}", "deadline": "{{ task.deadline|date:"Y-m-d" }}",
+                                    "priority": "{{ task.priority }}", "status": "{{ task.status }}",
+                                    "category_id": "{{ task.category.id }}", "assigned_to_id": "{{ task.assigned_to.id }}",
+                                    "team_id": "{{ task.team.id }}", "user_role": "{{ user_role }}"}'>
+                                        Редагувати завдання
+                                    </button>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div>
+                    <p class="text-muted">Завдань не знайдено.</p>
+                    <p class="text-muted">Спробуйте очистити фільтри та шукати знову.</p>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div>
-                <p class="text-muted">Завдань не знайдено.</p>
-                <p class="text-muted">Спробуйте очистити фільтри та шукати знову.</p>
-            </div>
-        {% endif %}
+            {% endif %}
         </div>
     </div>
 
@@ -167,7 +175,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="taskForm" method="POST" data-url-template="{% url 'task_manage:edit_task' 0 %}">
+                    <form id="taskForm" method="POST" data-url-template="{% url 'teams:team_edit_task' 0 %}">
                         {% csrf_token %}
                         <div class="mb-2 admin-field">
                             <label class="col-form-label">Назва:</label>
@@ -218,6 +226,7 @@
             </div>
         </div>
     </div>
+    
 </div>
 {% endblock %}
 

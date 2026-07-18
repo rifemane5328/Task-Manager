@@ -15,7 +15,11 @@ from. forms import TaskEditingForm, TaskMemberEditingForm
 
 @login_required
 def profile_view(request):
-    return render(request, "task_manage/profile.html")
+    user = request.user
+    context = {
+        "user": user
+    }
+    return render(request, "task_manage/profile.html", context)
 
 @login_required
 def dashboard_view(request):
@@ -60,11 +64,8 @@ def my_tasks_view(request):
             {'id': member.user.id, 'name': member.user.full_name}
             for member in team.members.all()
         ]
-    team_members_json = json.dumps(team_members_dict)
 
     categories = Category.objects.filter(team__in=user_teams)
-    # Користувачі-учасники команд в якій є поточний користувач
-    # team_members = CustomUser.objects.filter(teammember__team__members__user=request.user).distinct()
     task_filter = TaskFilter(request.GET, queryset=tasks, request=request)
 
     paginator = Paginator(task_filter.qs, 5)
@@ -73,8 +74,7 @@ def my_tasks_view(request):
 
     context = {
         "filter": task_filter,
-        "tasks": task_filter.qs,
-        "team_members_json": team_members_json,
+        "team_members_json": team_members_dict,
         "categories": categories,
         "page_obj": page_obj
     }
@@ -93,7 +93,7 @@ def edit_task_view(request, task_id):
             return redirect("task_manage:my_tasks")
         user_role = member.role
 
-        if user_role == "admin" or user_role == "owner":
+        if user_role in ('owner', 'admin'):
             form = TaskEditingForm(request.POST, instance=task)
         elif user_role == "member":
             form = TaskMemberEditingForm(request.POST, instance=task)
@@ -104,7 +104,7 @@ def edit_task_view(request, task_id):
 
                 # Перевіряємо чи можна призначити завдання цьому користувачу
                 is_valid_member = TeamMember.objects.filter(
-                    user=request.user,
+                    user=new_assigned_to,
                     team=task.team 
                 ).exists()
                 if not is_valid_member:
